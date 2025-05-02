@@ -7,7 +7,36 @@
 </head>
 <body>
   <h1>1lchrylime</h1>
+<div id="visitor-stats">
+  <p id="visit-count">👀 Loading visit count...</p>
+  <p id="visitor-countries">🌍 Loading locations...</p>
+</div>
+  <script>
+  fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
+    .then(response => response.json())
+    .then(data => {
+      const visits = data.length;
+      const countries = [...new Set(data.map(entry => entry.country).filter(Boolean))];
 
+      document.getElementById("visit-count").textContent =
+        `👀 You’re visitor #${visits}`;
+
+      document.getElementById("visitor-countries").textContent =
+        `🌍 Visitors from: ${countries.map(code => getFlagEmoji(code)).join(" ")}`;
+    })
+    .catch(error => {
+      console.error("Failed to load visitor data:", error);
+    });
+
+  function getFlagEmoji(countryCode) {
+    if (!countryCode || countryCode.length !== 2) return "";
+    const codePoints = countryCode
+      .toUpperCase()
+      .split("")
+      .map(char => 127397 + char.charCodeAt());
+    return String.fromCodePoint(...codePoints);
+  }
+</script>
   <script>
     fetch("https://ipinfo.io/json?token=ffb97be19c9016")
       .then(response => response.json())
