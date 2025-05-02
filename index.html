@@ -1,22 +1,38 @@
-<script>
-  fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-    .then(response => response.json())
-    .then(data => {
-      const payload = {
-        data: {
-          timestamp: new Date().toISOString(),
-          ip: data.ip,
-          country: data.country,
-          city: data.city
-        }
-      };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>like teardrops oranges hung</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>1lchrylime</h1>
 
-      fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-    });
-</script>
+  <script>
+    fetch("https://ipinfo.io/json?token=ffb97be19c9016")
+      .then(response => response.json())
+      .then(data => {
+        const payload = {
+          data: {
+            timestamp: new Date().toISOString(),
+            ip: data.ip,
+            country: data.country,
+            city: data.city
+          }
+        };
+
+        fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(json => console.log("SheetDB response:", json))
+        .catch(err => console.error("SheetDB error:", err));
+      })
+      .catch(err => console.error("ipinfo error:", err));
+  </script>
+</body>
+</html>
