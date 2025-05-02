@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>like teardrops oranges hung</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>1lchrylime</h1>
-
-  <div id="visitor-stats">
-    <p id="visit-count">loading visit count...</p>
-    <div id="visitor-log"></div>
-  </div>
-
-  <!-- Show visitor stats -->
-  <script>
+<script>
   console.log("fetching visitor stats...");
 
   fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
@@ -28,12 +12,11 @@
       const sixHours = 6 * 60 * 60 * 1000;
       const seen = {};
 
-      // Filter out duplicates from same IP within 6 hours
       const filtered = data
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // newest first
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
         .filter(entry => {
-          const ip = entry.ip;
-          const time = new Date(entry.timestamp).getTime();
+          const ip = entry.ip || "";
+          const time = new Date(entry.timestamp).getTime() || Date.now();
           if (!seen[ip]) {
             seen[ip] = time;
             return true;
@@ -48,23 +31,29 @@
 
       const logContainer = document.getElementById("visitor-log");
       const rows = filtered.map(entry => {
-        const date = new Date(entry.timestamp);
-        const dateStr = date.toLocaleDateString("en-US", {
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit"
-        }).replaceAll("/", ".");
+        const dateObj = new Date(entry.timestamp);
+        const isValidDate = !isNaN(dateObj.getTime());
 
-        const timeStr = date.toLocaleTimeString("en-US", {
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit"
-        });
+        let dateStr = "present place";
+        let timeStr = "present time";
 
-        const city = entry.city || "";
-        const country = entry.country || "";
-        const location = `${city}, ${country}`.toLowerCase();
+        if (isValidDate) {
+          const month = dateObj.getMonth() + 1;
+          const day = dateObj.getDate();
+          const year = dateObj.getFullYear().toString().slice(-2);
+          dateStr = `${month}.${day}.${year}`;
+
+          timeStr = dateObj.toLocaleTimeString("en-US", {
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          });
+        }
+
+        const city = (entry.city || "nowhere").toLowerCase();
+        const country = (entry.country || "zz").toLowerCase();
+        const location = `${city}, ${country}`;
 
         return `${dateStr} ${timeStr} ${location}`;
       });
@@ -75,33 +64,3 @@
       console.error("failed to load visitor data:", error);
     });
 </script>
-
-  <!-- Log new visitor -->
-  <script>
-    fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-      .then(response => response.json())
-      .then(data => {
-        const payload = {
-          data: {
-            timestamp: new Date().toISOString(),
-            ip: data.ip,
-            country: data.country,
-            city: data.city
-          }
-        };
-
-        fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(json => console.log("sheetdb response:", json))
-        .catch(err => console.error("sheetdb error:", err));
-      })
-      .catch(err => console.error("ipinfo error:", err));
-  </script>
-</body>
-</html>
