@@ -15,47 +15,66 @@
 
   <!-- Show visitor stats -->
   <script>
-    console.log("fetching visitor stats...");
+  console.log("fetching visitor stats...");
 
-    fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
-      .then(response => response.json())
-      .then(data => {
-        console.log("parsed visitor data:", data);
-        const visits = data.length;
-        document.getElementById("visit-count").textContent =
-          `you are visitor number ${visits}`;
+  fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
+    .then(response => response.json())
+    .then(data => {
+      console.log("parsed visitor data:", data);
+      const visits = data.length;
+      document.getElementById("visit-count").textContent =
+        `you are visitor number ${visits}`;
 
-        const logContainer = document.getElementById("visitor-log");
-        const rows = data
-          .map(entry => {
-            const date = new Date(entry.timestamp);
-            const dateStr = date.toLocaleDateString("en-US", {
-              year: "2-digit",
-              month: "2-digit",
-              day: "2-digit"
-            }).replaceAll("/", ".");
+      const sixHours = 6 * 60 * 60 * 1000;
+      const seen = {};
 
-            const timeStr = date.toLocaleTimeString("en-US", {
-              hour12: false,
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            });
+      // Filter out duplicates from same IP within 6 hours
+      const filtered = data
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // newest first
+        .filter(entry => {
+          const ip = entry.ip;
+          const time = new Date(entry.timestamp).getTime();
+          if (!seen[ip]) {
+            seen[ip] = time;
+            return true;
+          }
+          const lastTime = seen[ip];
+          if (lastTime - time >= sixHours) {
+            seen[ip] = time;
+            return true;
+          }
+          return false;
+        });
 
-            const city = entry.city || "";
-            const country = entry.country || "";
-            const location = `${city}, ${country}`.toLowerCase();
+      const logContainer = document.getElementById("visitor-log");
+      const rows = filtered.map(entry => {
+        const date = new Date(entry.timestamp);
+        const dateStr = date.toLocaleDateString("en-US", {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit"
+        }).replaceAll("/", ".");
 
-            return `${dateStr} ${timeStr} ${location}`;
-          })
-          .reverse(); // most recent first
+        const timeStr = date.toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
 
-        logContainer.innerHTML = rows.map(r => `<p>${r}</p>`).join("");
-      })
-      .catch(error => {
-        console.error("failed to load visitor data:", error);
+        const city = entry.city || "";
+        const country = entry.country || "";
+        const location = `${city}, ${country}`.toLowerCase();
+
+        return `${dateStr} ${timeStr} ${location}`;
       });
-  </script>
+
+      logContainer.innerHTML = rows.map(r => `<p>${r}</p>`).join("");
+    })
+    .catch(error => {
+      console.error("failed to load visitor data:", error);
+    });
+</script>
 
   <!-- Log new visitor -->
   <script>
