@@ -12,6 +12,7 @@
   <p id="visitor-countries">🌍 Loading locations...</p>
 </div>
   <script>
+    console.log("Fetching visitor stats...");
   fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
     .then(response => response.json())
     .then(data => {
