@@ -5,7 +5,27 @@
   <title>like teardrops oranges hung</title>
   <link rel="stylesheet" href="style.css">
 </head>
+  <script>
+  fetch("https://ipinfo.io/json?token=ffb97be19c9016")
+    .then(response => response.json())
+    .then(data => {
+      const payload = {
+        ip: data.ip,
+        country: data.country,
+        city: data.city
+      };
+
+      fetch(https://script.google.com/macros/s/AKfycbwHhLhIKRNcytp1Pf0O_2pK3QVTNhYFuCmSKqgZeXjx_dCWaNsOPvMH6RPb0TtA4EW81w/exec
+, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        contentType: "application/json"
+      });
+    });
+</script>
 <body>
   <h1>1lchrylime</h1>
 </body>
 </html>
+
+#https://script.google.com/macros/s/AKfycbwHhLhIKRNcytp1Pf0O_2pK3QVTNhYFuCmSKqgZeXjx_dCWaNsOPvMH6RPb0TtA4EW81w/exec
