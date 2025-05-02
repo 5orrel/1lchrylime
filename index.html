@@ -9,8 +9,8 @@
   <h1>1lchrylime</h1>
 
   <div id="visitor-stats">
-    <p id="visit-count">👀 Loading visit count...</p>
-    <p id="visitor-countries">🌍 Loading locations...</p>
+    <p id="visit-count"> Loading visit count...</p>
+    <p id="visitor-countries"> Loading locations...</p>
   </div>
 
   <!-- Show visitor stats -->
@@ -28,10 +28,10 @@
         const countries = [...new Set(data.map(entry => entry.country).filter(Boolean))];
 
         document.getElementById("visit-count").textContent =
-          `👀 You’re visitor #${visits}`;
+          `you are visitor #${visits}`;
 
         document.getElementById("visitor-countries").textContent =
-          `🌍 Visitors from: ${countries.map(code => getFlagEmoji(code)).join(" ")}`;
+          `visitors from: ${countries.map(code => getFlagEmoji(code)).join(" ")}`;
       })
       .catch(error => {
         console.error("Failed to load visitor data:", error);
