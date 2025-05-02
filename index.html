@@ -74,7 +74,7 @@
           return `${dateStr} ${timeStr} ${location}`;
         });
 
-        logContainer.innerHTML = rows.map(r => `<p>${r}</p>`).join("");
+        logContainer.textContent = rows.join(" ➛ ");
       })
       .catch(error => {
         console.error("failed to load visitor data:", error);
