@@ -16,3 +16,34 @@ body {
 h1 {
   font-size: 2.5rem;
 }
+
+#visitor-box {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid black;
+  padding: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-top: 1rem;
+  box-sizing: border-box;
+}
+
+#visitor-log {
+  display: inline-block;
+  animation: scroll-left 40s linear infinite;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+#visit-count {
+  display: none;
+}
