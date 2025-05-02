@@ -9,42 +9,52 @@
   <h1>1lchrylime</h1>
 
   <div id="visitor-stats">
-    <p id="visit-count"> Loading visit count...</p>
-    <p id="visitor-countries"> Loading locations...</p>
+    <p id="visit-count">loading visit count...</p>
+    <div id="visitor-log"></div>
   </div>
 
   <!-- Show visitor stats -->
   <script>
-    console.log("Fetching visitor stats...");
+    console.log("fetching visitor stats...");
 
     fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
-      .then(response => {
-        console.log("Got a response from SheetDB:", response);
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        console.log("Parsed visitor data:", data);
+        console.log("parsed visitor data:", data);
         const visits = data.length;
-        const countries = [...new Set(data.map(entry => entry.country).filter(Boolean))];
-
         document.getElementById("visit-count").textContent =
-          `you are visitor #${visits}`;
+          `you are visitor number ${visits}`;
 
-        document.getElementById("visitor-countries").textContent =
-          `visitors from: ${countries.map(code => getFlagEmoji(code)).join(" ")}`;
+        const logContainer = document.getElementById("visitor-log");
+        const rows = data
+          .map(entry => {
+            const date = new Date(entry.timestamp);
+            const dateStr = date.toLocaleDateString("en-US", {
+              year: "2-digit",
+              month: "2-digit",
+              day: "2-digit"
+            }).replaceAll("/", ".");
+
+            const timeStr = date.toLocaleTimeString("en-US", {
+              hour12: false,
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+
+            const city = entry.city || "";
+            const country = entry.country || "";
+            const location = `${city}, ${country}`.toLowerCase();
+
+            return `${dateStr} ${timeStr} ${location}`;
+          })
+          .reverse(); // most recent first
+
+        logContainer.innerHTML = rows.map(r => `<p>${r}</p>`).join("");
       })
       .catch(error => {
-        console.error("Failed to load visitor data:", error);
+        console.error("failed to load visitor data:", error);
       });
-
-    function getFlagEmoji(countryCode) {
-      if (!countryCode || countryCode.length !== 2) return "";
-      const codePoints = countryCode
-        .toUpperCase()
-        .split("")
-        .map(char => 127397 + char.charCodeAt());
-      return String.fromCodePoint(...codePoints);
-    }
   </script>
 
   <!-- Log new visitor -->
@@ -69,8 +79,8 @@
           body: JSON.stringify(payload)
         })
         .then(res => res.json())
-        .then(json => console.log("SheetDB response:", json))
-        .catch(err => console.error("SheetDB error:", err));
+        .then(json => console.log("sheetdb response:", json))
+        .catch(err => console.error("sheetdb error:", err));
       })
       .catch(err => console.error("ipinfo error:", err));
   </script>
