@@ -10,8 +10,10 @@
 
   <script>
     fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-      .then(response => response.json())
-      .then(data => {
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
         const payload = {
           ip: data.ip,
           country: data.country,
