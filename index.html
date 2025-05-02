@@ -8,26 +8,27 @@
 <body>
   <h1>1lchrylime</h1>
 
-  <script>
-    fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(data) {
-        const payload = {
+ <script>
+  fetch("https://ipinfo.io/json?token=ffb97be19c9016")
+    .then(response => response.json())
+    .then(data => {
+      const payload = {
+        data: {
+          timestamp: new Date().toISOString(),
           ip: data.ip,
           country: data.country,
           city: data.city
-        };
+        }
+      };
 
-        fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b"), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        };
-      });
-  </script>
+      fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      };
+    });
+</script>
 </body>
 </html>
