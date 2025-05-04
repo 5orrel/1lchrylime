@@ -1,43 +1,31 @@
 body {
   font-family: sans-serif;
-  background-image: url("mytree.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  color: white;
+  padding: 2rem;
 }
 
-h1 {
-  font-size: 2.5rem;
-  position: relative;
-  z-index: 2;
+h1#site-title {
+  font-size: 2rem;
   margin-bottom: 1rem;
+  z-index: 2;
+  position: relative;
 }
 
 #visitor-box {
-  width: fit-content;
-  max-width: 100%;
   border: 1px solid black;
   padding: 0.5rem;
   overflow: hidden;
   white-space: nowrap;
-  margin-top: 1rem;
+  max-width: 100%;
   box-sizing: border-box;
-  position: relative;
   z-index: 1;
+  position: relative;
 }
 
 #visitor-log {
   display: inline-block;
-  animation: scroll-left 40s linear infinite;
   font-family: monospace;
   font-size: 0.9rem;
+  animation: scroll-left 40s linear infinite;
 }
 
 @keyframes scroll-left {
@@ -47,8 +35,4 @@ h1 {
   to {
     transform: translateX(-100%);
   }
-}
-
-#visit-count {
-  display: none;
 }
