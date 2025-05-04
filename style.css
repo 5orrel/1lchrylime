@@ -6,12 +6,14 @@ body {
 
 h1#site-title {
   font-size: 2rem;
+  display: block;
   margin-bottom: 1rem;
-  z-index: 2;
   position: relative;
+  z-index: 2;
 }
 
 #visitor-box {
+  display: block;
   width: 100vw;
   overflow: hidden;
   border: 1px solid black;
@@ -19,6 +21,7 @@ h1#site-title {
   white-space: nowrap;
   box-sizing: border-box;
   background-color: white;
+  margin-top: 1rem;
 }
 
 #visitor-log {
