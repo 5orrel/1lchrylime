@@ -1,84 +1,174 @@
-// Fetch and display visit data
-fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
-  .then(response => response.json())
-  .then(data => {
-    const sixHours = 6 * 60 * 60 * 1000;
-    const seen = {};
-
-    const filtered = data
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .filter(entry => {
-        const ip = entry.ip || "";
-        const time = new Date(entry.timestamp).getTime() || Date.now();
-        if (!seen[ip]) {
-          seen[ip] = time;
-          return true;
-        }
-        const lastTime = seen[ip];
-        if (lastTime - time >= sixHours) {
-          seen[ip] = time;
-          return true;
-        }
-        return false;
-      });
-
-    const rows = filtered.map(entry => {
-      const dateObj = new Date(entry.timestamp);
-      const isValidDate = !isNaN(dateObj.getTime());
-
-      let dateStr = "present place";
-      let timeStr = "present time";
-
-      if (isValidDate) {
-        const month = dateObj.getMonth() + 1;
-        const day = dateObj.getDate();
-        const year = dateObj.getFullYear().toString().slice(-2);
-        dateStr = `${month}.${day}.${year}`;
-
-        timeStr = dateObj.toLocaleTimeString("en-US", {
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit"
+document.addEventListener('DOMContentLoaded', function() {
+    // API URLs
+    const ipInfoAPI = 'https://ipinfo.io/json?token=ffb97be19c9016';
+    const sheetDBAPI = 'https://sheetdb.io/api/v1/ovgpnrzj00t4b';
+    
+    // Get visitor information
+    getVisitorInfo();
+    
+    // Fetch existing entries and display them
+    fetchEntries();
+    
+    // Periodically update entries
+    setInterval(fetchEntries, 60000); // Update every minute
+    
+    /**
+     * Get visitor information and log it to the SheetDB
+     */
+    function getVisitorInfo() {
+        fetch(ipInfoAPI)
+            .then(response => response.json())
+            .then(data => {
+                const timestamp = new Date();
+                const entryData = {
+                    ip: data.ip || 'unknown',
+                    city: data.city ? data.city.toLowerCase() : 'nowhere',
+                    country: data.country ? data.country.toLowerCase() : 'zz',
+                    timestamp: timestamp.toISOString()
+                };
+                
+                logVisitorEntry(entryData);
+            })
+            .catch(error => {
+                console.error('Error fetching visitor information:', error);
+                const timestamp = new Date();
+                const entryData = {
+                    ip: 'unknown',
+                    city: 'nowhere',
+                    country: 'zz',
+                    timestamp: timestamp.toISOString()
+                };
+                
+                logVisitorEntry(entryData);
+            });
+    }
+    
+    /**
+     * Log visitor entry to SheetDB
+     * @param {Object} entryData - The visitor entry data
+     */
+    function logVisitorEntry(entryData) {
+        fetch(sheetDBAPI, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: [entryData] })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Visitor entry logged:', data);
+        })
+        .catch(error => {
+            console.error('Error logging visitor entry:', error);
         });
-      }
-
-      const city = (entry.city || "nowhere").toLowerCase();
-      const country = (entry.country || "zz").toLowerCase();
-      const location = `${city}, ${country}`;
-
-      return `${dateStr} ${timeStr} ${location}`;
-    });
-
-    const logEl = document.getElementById("visitor-log");
-    logEl.textContent = rows.join(" ➛ ");
-  })
-  .catch(error => {
-    console.error("failed to load visitor data:", error);
-  });
-
-// Log the current visit
-fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-  .then(response => response.json())
-  .then(data => {
-    const payload = {
-      data: {
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        country: data.country,
-        city: data.city
-      }
-    };
-
-    fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(json => console.log("sheetdb response:", json))
-    .catch(err => console.error("sheetdb error:", err));
-  })
-  .catch(err => console.error("ipinfo error:", err));
+    }
+    
+    /**
+     * Fetch all entries from SheetDB
+     */
+    function fetchEntries() {
+        fetch(sheetDBAPI)
+            .then(response => response.json())
+            .then(data => {
+                // Process entries and filter duplicates
+                const processedEntries = processEntries(data);
+                displayEntries(processedEntries);
+            })
+            .catch(error => {
+                console.error('Error fetching entries:', error);
+                // Display a placeholder entry if fetching fails
+                const placeholderEntry = formatEntry({
+                    timestamp: 'present place:present time',
+                    city: 'nowhere',
+                    country: 'zz'
+                });
+                document.getElementById('visitorEntries').innerHTML = placeholderEntry;
+            });
+    }
+    
+    /**
+     * Process entries and filter duplicates
+     * @param {Array} entries - The raw entries from SheetDB
+     * @returns {Array} - Processed entries with duplicates filtered
+     */
+    function processEntries(entries) {
+        const uniqueEntries = [];
+        const ipTimeMap = new Map();
+        
+        // Sort entries by timestamp (newest first)
+        entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Filter out duplicates from the same IP within 6 hours
+        entries.forEach(entry => {
+            const ip = entry.ip;
+            const currentTime = new Date(entry.timestamp);
+            
+            if (!ipTimeMap.has(ip)) {
+                ipTimeMap.set(ip, currentTime);
+                uniqueEntries.push(entry);
+            } else {
+                const lastTime = ipTimeMap.get(ip);
+                const hoursDiff = (currentTime - lastTime) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 6) {
+                    ipTimeMap.set(ip, currentTime);
+                    uniqueEntries.push(entry);
+                }
+            }
+        });
+        
+        return uniqueEntries;
+    }
+    
+    /**
+     * Format the entry for display
+     * @param {Object} entry - The entry data
+     * @returns {string} - Formatted entry string
+     */
+    function formatEntry(entry) {
+        let dateTime = 'present place:present time';
+        
+        if (entry.timestamp && entry.timestamp !== 'present place:present time') {
+            const date = new Date(entry.timestamp);
+            
+            // Format: M.D.YY HH:MM:SS (no leading zeros)
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const year = date.getFullYear().toString().substr(-2);
+            
+            const hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            
+            dateTime = `${month}.${day}.${year} ${hours}:${minutes}:${seconds}`;
+        }
+        
+        const city = entry.city || 'nowhere';
+        const country = entry.country || 'zz';
+        
+        return `<span class="visitor-entry">${dateTime} ${city}, ${country}</span>`;
+    }
+    
+    /**
+     * Display processed entries
+     * @param {Array} entries - The processed entries
+     */
+    function displayEntries(entries) {
+        const entriesContainer = document.getElementById('visitorEntries');
+        
+        if (entries.length === 0) {
+            // Display a placeholder if no entries
+            entriesContainer.innerHTML = formatEntry({
+                timestamp: 'present place:present time',
+                city: 'nowhere',
+                country: 'zz'
+            });
+            return;
+        }
+        
+        // Format each entry and join with the separator
+        const formattedEntries = entries.map(entry => formatEntry(entry)).join(' ➛ ');
+        entriesContainer.innerHTML = formattedEntries;
+    }
+});
