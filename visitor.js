@@ -1,3 +1,4 @@
+// Fetch and display visit data
 fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
   .then(response => response.json())
   .then(data => {
@@ -56,7 +57,7 @@ fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
     console.error("failed to load visitor data:", error);
   });
 
-// Log visitor
+// Log the current visit
 fetch("https://ipinfo.io/json?token=ffb97be19c9016")
   .then(response => response.json())
   .then(data => {
