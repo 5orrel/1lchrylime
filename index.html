@@ -23,8 +23,6 @@
       .then(data => {
         console.log("parsed visitor data:", data);
         const visits = data.length;
-        document.getElementById("visit-count").textContent =
-          `you are visitor number ${visits}`;
 
         const sixHours = 6 * 60 * 60 * 1000;
         const seen = {};
