@@ -1,50 +1,66 @@
-/* Set full-page background */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  margin: 0;
-  padding: 2rem;
-  font-family: sans-serif;
-  background-image: url("mytree.jpg"); 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: black;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
 }
 
-/* Heading style */
-h1#site-title {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  text-align: center;
-  z-index: 2;
-  position: relative;
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('mytree.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
 }
 
-/* Scrolling box */
-#visitor-box {
-  display: block;
-  width: 100vw;
-  overflow: hidden;
-  border: 1px solid black;
-  padding: 0.5rem;
-  white-space: nowrap;
-  box-sizing: border-box;
-  background-color: white;
-  margin-top: 1rem;
+h1 {
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Scrolling text */
-#visitor-log {
-  display: inline-block;
-  font-family: monospace;
-  font-size: 0.9rem;
-  animation: scroll-left 40s linear infinite;
+.scroll-container {
+    width: 100vw;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0);
+    position: relative;
+}
+
+.scroll-content {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scroll-left 120s linear infinite;
+    font-family: 'Courier New', monospace;
+    color: white;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    padding: 1rem 0;
 }
 
 @keyframes scroll-left {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.visitor-entry {
+    display: inline-block;
+    margin-right: 20px;
 }
