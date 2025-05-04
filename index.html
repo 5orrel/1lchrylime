@@ -6,106 +6,12 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>1lchrylime</h1>
+  <h1 id="site-title">1lchrylime</h1>
 
-  <div id="visitor-stats">
   <div id="visitor-box">
-    <div id="visitor-log"></div>
+    <div id="visitor-log">loading...</div>
   </div>
-</div>
 
-  <!-- Show visitor stats -->
-  <script>
-    console.log("fetching visitor stats...");
-
-    fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
-      .then(response => response.json())
-      .then(data => {
-        console.log("parsed visitor data:", data);
-        const visits = data.length;
-
-        const sixHours = 6 * 60 * 60 * 1000;
-        const seen = {};
-
-        const filtered = data
-          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-          .filter(entry => {
-            const ip = entry.ip || "";
-            const time = new Date(entry.timestamp).getTime() || Date.now();
-            if (!seen[ip]) {
-              seen[ip] = time;
-              return true;
-            }
-            const lastTime = seen[ip];
-            if (lastTime - time >= sixHours) {
-              seen[ip] = time;
-              return true;
-            }
-            return false;
-          });
-
-        const logContainer = document.getElementById("visitor-log");
-        const rows = filtered.map(entry => {
-          const dateObj = new Date(entry.timestamp);
-          const isValidDate = !isNaN(dateObj.getTime());
-
-          let dateStr = "present place";
-          let timeStr = "present time";
-
-          if (isValidDate) {
-            const month = dateObj.getMonth() + 1;
-            const day = dateObj.getDate();
-            const year = dateObj.getFullYear().toString().slice(-2);
-            dateStr = `${month}.${day}.${year}`;
-
-            timeStr = dateObj.toLocaleTimeString("en-US", {
-              hour12: false,
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            });
-          }
-
-          const city = (entry.city || "nowhere").toLowerCase();
-          const country = (entry.country || "zz").toLowerCase();
-          const location = `${city}, ${country}`;
-
-          return `${dateStr} ${timeStr} ${location}`;
-        });
-
-        logContainer.textContent = rows.join(" ➛ ");
-      })
-      .catch(error => {
-        console.error("failed to load visitor data:", error);
-      });
-  </script>
-
-  <!-- Log new visitor -->
-  <script>
-    fetch("https://ipinfo.io/json?token=ffb97be19c9016")
-      .then(response => response.json())
-      .then(data => {
-        const payload = {
-          data: {
-            timestamp: new Date().toISOString(),
-            ip: data.ip,
-            country: data.country,
-            city: data.city
-          }
-        };
-
-        fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(json => console.log("sheetdb response:", json))
-        .catch(err => console.error("sheetdb error:", err));
-      })
-      .catch(err => console.error("ipinfo error:", err));
-  </script>
+  <script src="visitor.js"></script>
 </body>
 </html>
