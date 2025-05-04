@@ -126,10 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {Object} entry - The entry data
      * @returns {string} - Formatted entry string
      */
-    function formatEntry(entry) {
-        let dateTime = 'present place:present time';
+ function formatEntry(entry) {
+        let dateTime;
         
-        if (entry.timestamp && entry.timestamp !== 'present place:present time') {
+        if (entry.timestamp) {
             const date = new Date(entry.timestamp);
             
             // Format: M.D.YY HH:MM:SS (no leading zeros)
@@ -142,8 +142,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const seconds = date.getSeconds().toString().padStart(2, '0');
             
             dateTime = `${month}.${day}.${year} ${hours}:${minutes}:${seconds}`;
+        } else {
+            dateTime = "present place:present time";
         }
-        
+
         const city = entry.city || 'nowhere';
         const country = entry.country || 'zz';
         
@@ -160,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (entries.length === 0) {
             // Display a placeholder if no entries
             entriesContainer.innerHTML = formatEntry({
-                timestamp: 'present place:present time',
+                timestamp: 'present time : present place',
                 city: 'nowhere',
                 country: 'zz'
             });
