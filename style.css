@@ -1,6 +1,7 @@
 body {
   font-family: sans-serif;
   padding: 2rem;
+  margin: 0;
 }
 
 h1#site-title {
@@ -11,14 +12,13 @@ h1#site-title {
 }
 
 #visitor-box {
+  width: 100vw;
+  overflow: hidden;
   border: 1px solid black;
   padding: 0.5rem;
-  overflow: hidden;
   white-space: nowrap;
-  max-width: 100%;
   box-sizing: border-box;
-  z-index: 1;
-  position: relative;
+  background-color: white;
 }
 
 #visitor-log {
