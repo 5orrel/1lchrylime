@@ -1,10 +1,6 @@
-console.log("fetching visitor stats...");
-
 fetch("https://sheetdb.io/api/v1/ovgpnrzj00t4b")
   .then(response => response.json())
   .then(data => {
-    console.log("parsed visitor data:", data);
-
     const sixHours = 6 * 60 * 60 * 1000;
     const seen = {};
 
