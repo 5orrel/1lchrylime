@@ -1,17 +1,25 @@
+/* Set full-page background */
 body {
-  font-family: sans-serif;
-  padding: 2rem;
   margin: 0;
+  padding: 2rem;
+  font-family: sans-serif;
+  background-image: url("mytree.jpg"); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
 }
 
+/* Heading style */
 h1#site-title {
   font-size: 2rem;
-  display: block;
   margin-bottom: 1rem;
-  position: relative;
+  text-align: center;
   z-index: 2;
+  position: relative;
 }
 
+/* Scrolling box */
 #visitor-box {
   display: block;
   width: 100vw;
@@ -24,6 +32,7 @@ h1#site-title {
   margin-top: 1rem;
 }
 
+/* Scrolling text */
 #visitor-log {
   display: inline-block;
   font-family: monospace;
